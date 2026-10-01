@@ -1,5 +1,6 @@
 import { useStore } from './store/useStore';
 import Welcome from './components/Welcome';
+import Auth from './components/Auth';
 import Onboarding from './components/Onboarding';
 import SwipeScreen from './components/SwipeScreen';
 import Membership from './components/Membership';
@@ -28,6 +29,8 @@ function App() {
     switch (screen) {
       case 'welcome':
         return <Welcome />;
+      case 'auth':
+        return <Auth />;
       case 'onboarding':
         return <Onboarding />;
       case 'swipe':

@@ -11,7 +11,7 @@ const tierInfo: Record<string, { name: string; color: string; icon: any }> = {
 };
 
 export default function Profile() {
-  const { membership, setScreen, boostsRemaining, superLikesRemaining, likedProfiles, appMode, linkedinVerified } = useStore();
+  const { membership, setScreen, boostsRemaining, superLikesRemaining, likedProfiles, appMode, linkedinVerified, user, logout } = useStore();
   const tier = tierInfo[membership];
 
   const features = [
@@ -49,7 +49,7 @@ export default function Profile() {
             </button>
           </div>
 
-          <h2 className="text-2xl font-bold text-white mt-4">Alejandro, 28</h2>
+          <h2 className="text-2xl font-bold text-white mt-4">{user?.name || 'Alejandro'}, {user?.age || 28}</h2>
           <div className={`flex items-center gap-1.5 mt-1 px-3 py-1 rounded-full bg-gradient-to-r ${tier.color}`}>
             <tier.icon className="w-3.5 h-3.5 text-white" />
             <span className="text-white text-xs font-semibold">{tier.name}</span>
@@ -192,6 +192,15 @@ export default function Profile() {
         <button className="w-full flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
           <Settings className="w-5 h-5 text-gray-400" />
           <span className="text-white text-sm font-medium">Configuración</span>
+        </button>
+        <button
+          onClick={logout}
+          className="w-full flex items-center gap-3 p-4 rounded-2xl bg-red-500/5 border border-red-500/20 hover:bg-red-500/10 transition-colors"
+        >
+          <svg className="w-5 h-5 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+          <span className="text-red-400 text-sm font-medium">Cerrar sesión</span>
         </button>
       </motion.div>
     </div>

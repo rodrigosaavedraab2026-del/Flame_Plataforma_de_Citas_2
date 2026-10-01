@@ -87,13 +87,32 @@ export interface CompatibilityResult {
   suggestions: string[];
 }
 
-export type Screen = 'welcome' | 'onboarding' | 'swipe' | 'membership' | 'payment' | 'chat' | 'chatDetail' | 'notifications' | 'profile' | 'consumables' | 'stories' | 'storyViewer' | 'events' | 'eventDetail' | 'iceBreaker' | 'aiMatching' | 'compatibility' | 'bffMode' | 'linkedinVerify' | 'analytics' | 'videoProfile';
+export type Screen = 'welcome' | 'auth' | 'onboarding' | 'swipe' | 'membership' | 'payment' | 'chat' | 'chatDetail' | 'notifications' | 'profile' | 'consumables' | 'stories' | 'storyViewer' | 'events' | 'eventDetail' | 'iceBreaker' | 'aiMatching' | 'compatibility' | 'bffMode' | 'linkedinVerify' | 'analytics' | 'videoProfile';
 export type MembershipTier = 'free' | 'plus' | 'gold' | 'platinum' | 'select';
 export type AppMode = 'dating' | 'bff' | 'business';
+
+export interface User {
+  id: string;
+  email: string;
+  name: string;
+  age: number;
+  gender: 'male' | 'female' | 'other';
+  lookingFor: 'male' | 'female' | 'everyone';
+  avatar?: string;
+  verified: boolean;
+  createdAt: Date;
+}
 
 interface AppState {
   screen: Screen;
   setScreen: (screen: Screen) => void;
+  // Auth
+  isAuthenticated: boolean;
+  user: User | null;
+  login: (email: string, password: string) => Promise<boolean>;
+  register: (userData: Omit<User, 'id' | 'verified' | 'createdAt'> & { password: string }) => Promise<boolean>;
+  logout: () => void;
+  updateProfile: (updates: Partial<User>) => void;
   currentProfileIndex: number;
   setCurrentProfileIndex: (index: number) => void;
   likedProfiles: number[];
@@ -162,6 +181,68 @@ interface AppState {
 export const useStore = create<AppState>((set, get) => ({
   screen: 'welcome',
   setScreen: (screen) => set({ screen }),
+  
+  // Auth
+  isAuthenticated: false,
+  user: null,
+  login: async (email: string, password: string) => {
+    // Simulated login - in production, this would call an API
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Simulate successful login
+    if (email && password.length >= 6) {
+      set({
+        isAuthenticated: true,
+        user: {
+          id: 'user_' + Date.now(),
+          email,
+          name: email.split('@')[0],
+          age: 28,
+          gender: 'male',
+          lookingFor: 'female',
+          verified: false,
+          createdAt: new Date(),
+        },
+      });
+      return true;
+    }
+    return false;
+  },
+  register: async (userData) => {
+    // Simulated registration
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Simulate successful registration
+    if (userData.email && userData.password.length >= 6 && userData.name) {
+      set({
+        isAuthenticated: true,
+        user: {
+          id: 'user_' + Date.now(),
+          email: userData.email,
+          name: userData.name,
+          age: userData.age,
+          gender: userData.gender,
+          lookingFor: userData.lookingFor,
+          verified: false,
+          createdAt: new Date(),
+        },
+      });
+      return true;
+    }
+    return false;
+  },
+  logout: () => {
+    set({
+      isAuthenticated: false,
+      user: null,
+      screen: 'welcome',
+    });
+  },
+  updateProfile: (updates) => {
+    set((state) => ({
+      user: state.user ? { ...state.user, ...updates } : null,
+    }));
+  },
   
   currentProfileIndex: 0,
   setCurrentProfileIndex: (index) => set({ currentProfileIndex: index }),

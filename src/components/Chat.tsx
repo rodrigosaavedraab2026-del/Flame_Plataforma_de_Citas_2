@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Send, Smile, Image, Mic } from 'lucide-react';
+import { ArrowLeft, Send, Smile, Image, Mic, Square, Play, Pause } from 'lucide-react';
 import { useStore, Message } from '../store/useStore';
 
 const autoReplies = [
@@ -16,10 +16,79 @@ const autoReplies = [
   '¡Eso suena increíble!',
 ];
 
+function VoiceNotePlayer({ message }: { message: Message }) {
+  const [playing, setPlaying] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const togglePlay = () => {
+    if (playing) {
+      setPlaying(false);
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    } else {
+      setPlaying(true);
+      setProgress(0);
+      const duration = (message.voiceDuration || 10) * 1000;
+      const step = 100 / (duration / 50);
+      intervalRef.current = setInterval(() => {
+        setProgress((p) => {
+          if (p >= 100) {
+            setPlaying(false);
+            if (intervalRef.current) clearInterval(intervalRef.current);
+            return 0;
+          }
+          return p + step;
+        });
+      }, 50);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, []);
+
+  const formatDuration = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  return (
+    <div className="flex items-center gap-2 min-w-[180px]">
+      <button onClick={togglePlay} className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+        {playing ? <Pause className="w-3.5 h-3.5 text-white" /> : <Play className="w-3.5 h-3.5 text-white ml-0.5" />}
+      </button>
+      <div className="flex-1">
+        <div className="flex gap-0.5 items-center h-6">
+          {[...Array(20)].map((_, i) => (
+            <motion.div
+              key={i}
+              animate={{
+                height: playing ? `${Math.random() * 100}%` : `${20 + Math.random() * 60}%`,
+              }}
+              transition={{ duration: 0.3, delay: i * 0.02 }}
+              className={`w-1 rounded-full ${
+                (i / 20) * 100 <= progress ? 'bg-white' : 'bg-white/40'
+              }`}
+              style={{ height: `${20 + Math.random() * 60}%` }}
+            />
+          ))}
+        </div>
+        <p className="text-[10px] text-white/50 mt-0.5">{formatDuration(message.voiceDuration || 0)}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function Chat() {
   const { chats, selectedChatId, setSelectedChatId, setScreen, sendMessage } = useStore();
   const [inputText, setInputText] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const recordingIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const selectedChat = chats.find((c) => c.id === selectedChatId);
 
@@ -29,11 +98,12 @@ export default function Chat() {
 
   const handleSend = () => {
     if (!inputText.trim() || !selectedChatId) return;
-    
-    sendMessage(selectedChatId, inputText.trim());
+    sendMessage(selectedChatId, inputText.trim(), 'text');
     setInputText('');
+    simulateReply();
+  };
 
-    // Auto reply after 1-2 seconds
+  const simulateReply = () => {
     setTimeout(() => {
       const reply = autoReplies[Math.floor(Math.random() * autoReplies.length)];
       const replyMessage: Message = {
@@ -41,6 +111,7 @@ export default function Chat() {
         text: reply,
         sender: 'them',
         timestamp: new Date(),
+        type: 'text',
       };
       useStore.setState((state) => ({
         chats: state.chats.map((chat) => {
@@ -51,6 +122,35 @@ export default function Chat() {
         }),
       }));
     }, 1000 + Math.random() * 1500);
+  };
+
+  const startRecording = () => {
+    setIsRecording(true);
+    setRecordingTime(0);
+    recordingIntervalRef.current = setInterval(() => {
+      setRecordingTime((t) => t + 1);
+    }, 1000);
+  };
+
+  const stopRecording = () => {
+    setIsRecording(false);
+    if (recordingIntervalRef.current) clearInterval(recordingIntervalRef.current);
+    if (selectedChatId && recordingTime >= 1) {
+      sendMessage(selectedChatId, '🎤 Nota de voz', 'voice');
+      setRecordingTime(0);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (recordingIntervalRef.current) clearInterval(recordingIntervalRef.current);
+    };
+  }, []);
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
   if (selectedChatId && selectedChat) {
@@ -91,22 +191,45 @@ export default function Chat() {
                 className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[75%] px-4 py-2.5 rounded-2xl ${
+                  className={`max-w-[80%] px-4 py-2.5 rounded-2xl ${
                     msg.sender === 'me'
                       ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-br-sm'
                       : 'bg-white/10 text-white rounded-bl-sm'
                   }`}
                 >
-                  <p className="text-sm">{msg.text}</p>
-                  <p className={`text-[10px] mt-1 ${msg.sender === 'me' ? 'text-white/60' : 'text-white/40'}`}>
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </p>
+                  {msg.type === 'voice' ? (
+                    <VoiceNotePlayer message={msg} />
+                  ) : (
+                    <>
+                      <p className="text-sm">{msg.text}</p>
+                      <p className={`text-[10px] mt-1 ${msg.sender === 'me' ? 'text-white/60' : 'text-white/40'}`}>
+                        {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </p>
+                    </>
+                  )}
                 </div>
               </motion.div>
             ))}
           </AnimatePresence>
           <div ref={messagesEndRef} />
         </div>
+
+        {/* Recording indicator */}
+        {isRecording && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="px-4 py-2 bg-red-500/10 border-t border-red-500/20 flex items-center gap-3"
+          >
+            <motion.div
+              animate={{ scale: [1, 1.3, 1] }}
+              transition={{ duration: 1, repeat: Infinity }}
+              className="w-3 h-3 rounded-full bg-red-500"
+            />
+            <span className="text-red-400 text-sm font-medium">Grabando...</span>
+            <span className="text-white/50 text-sm ml-auto">{formatTime(recordingTime)}</span>
+          </motion.div>
+        )}
 
         {/* Input */}
         <div className="p-4 border-t border-white/10 bg-white/5 backdrop-blur-sm">
@@ -125,7 +248,16 @@ export default function Chat() {
               placeholder="Escribe un mensaje..."
               className="flex-1 bg-white/10 border border-white/20 rounded-full px-4 py-2.5 text-white text-sm placeholder-white/30 focus:outline-none focus:border-pink-500/50"
             />
-            {inputText.trim() ? (
+            {isRecording ? (
+              <motion.button
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                onClick={stopRecording}
+                className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center"
+              >
+                <Square className="w-4 h-4 text-white" />
+              </motion.button>
+            ) : inputText.trim() ? (
               <motion.button
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
@@ -135,9 +267,14 @@ export default function Chat() {
                 <Send className="w-4 h-4 text-white" />
               </motion.button>
             ) : (
-              <button className="text-white/40 hover:text-white/60 transition-colors">
+              <motion.button
+                whileTap={{ scale: 0.9 }}
+                onMouseDown={startRecording}
+                onTouchStart={startRecording}
+                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white/40 hover:text-white/60 transition-colors"
+              >
                 <Mic className="w-5 h-5" />
-              </button>
+              </motion.button>
             )}
           </div>
         </div>

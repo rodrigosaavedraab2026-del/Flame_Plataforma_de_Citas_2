@@ -1,19 +1,27 @@
 import { motion } from 'framer-motion';
-import { Heart, MessageCircle, Star, Zap, Bell, CheckCheck } from 'lucide-react';
+import { Heart, MessageCircle, Star, Zap, Bell, CheckCheck, Calendar, Sparkles, Brain, TrendingUp } from 'lucide-react';
 import { useStore } from '../store/useStore';
 
-const iconMap = {
+const iconMap: Record<string, any> = {
   match: Heart,
   like: Star,
   message: MessageCircle,
   boost: Zap,
+  event: Calendar,
+  story: Sparkles,
+  ai: Brain,
+  compatibility: TrendingUp,
 };
 
-const colorMap = {
+const colorMap: Record<string, string> = {
   match: 'from-pink-500 to-rose-500',
   like: 'from-yellow-500 to-amber-500',
   message: 'from-blue-500 to-cyan-500',
   boost: 'from-purple-500 to-violet-500',
+  event: 'from-green-500 to-emerald-500',
+  story: 'from-orange-500 to-red-500',
+  ai: 'from-indigo-500 to-blue-500',
+  compatibility: 'from-teal-500 to-cyan-500',
 };
 
 export default function Notifications() {
@@ -51,7 +59,8 @@ export default function Notifications() {
       ) : (
         <div className="space-y-2">
           {notifications.map((notification, index) => {
-            const Icon = iconMap[notification.type];
+            const Icon = iconMap[notification.type] || Bell;
+            const color = colorMap[notification.type] || 'from-gray-500 to-gray-600';
             return (
               <motion.div
                 key={notification.id}
@@ -66,7 +75,7 @@ export default function Notifications() {
                 }`}
               >
                 {/* Icon */}
-                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${colorMap[notification.type]} flex items-center justify-center flex-shrink-0`}>
+                <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${color} flex items-center justify-center flex-shrink-0`}>
                   <Icon className="w-5 h-5 text-white" />
                 </div>
 

@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Crown, Check, X, Zap, Star, Sparkles, Shield } from 'lucide-react';
+import { Crown, Check, X, Zap, Star, Sparkles, Shield, Brain, Video, Calendar, Gamepad2, TrendingUp, Users, Linkedin } from 'lucide-react';
 import { useStore, MembershipTier } from '../store/useStore';
 
 const plans = [
@@ -17,8 +17,10 @@ const plans = [
       { text: 'Retroceder (Rebobinar)', included: true },
       { text: 'Pasaporte: cambia ubicación', included: true },
       { text: 'Sin anuncios', included: true },
+      { text: 'Juegos rompehielos', included: true },
+      { text: 'Historias básicas', included: true },
       { text: 'Ve quién te gustó', included: false },
-      { text: 'Prioridad en likes', included: false },
+      { text: 'Match con IA', included: false },
     ],
   },
   {
@@ -33,8 +35,10 @@ const plans = [
       { text: 'Ve quién te gustó', included: true },
       { text: '10 Super Likes al día', included: true },
       { text: '5 Boosts al mes', included: true },
-      { text: 'Selección semanal Top Picks', included: true },
-      { text: 'Ajustes de perfil avanzados', included: true },
+      { text: 'Match con IA básico', included: true },
+      { text: 'Análisis de compatibilidad', included: true },
+      { text: 'Acceso a eventos', included: true },
+      { text: 'Historias avanzadas', included: true },
       { text: 'Leer recibos', included: true },
       { text: 'Prioridad en likes', included: true },
     ],
@@ -52,9 +56,11 @@ const plans = [
       { text: 'Mensaje antes del match', included: true },
       { text: 'Super Likes ilimitados', included: true },
       { text: 'Boosts ilimitados', included: true },
-      { text: 'Acceso a eventos exclusivos', included: true },
-      { text: 'Soporte prioritario 24/7', included: true },
       { text: 'Perfiles de vídeo', included: true },
+      { text: 'Notas de voz en chat', included: true },
+      { text: 'Analytics completo', included: true },
+      { text: 'Verificación LinkedIn', included: true },
+      { text: 'Soporte prioritario 24/7', included: true },
     ],
   },
   {
@@ -72,8 +78,10 @@ const plans = [
       { text: 'Perfil verificado SELECT', included: true },
       { text: 'Eventos VIP privados', included: true },
       { text: 'Casamentero personal', included: true },
-      { text: 'Acceso anticipado a funciones', included: true },
+      { text: 'Modo BFF/Business', included: true },
+      { text: 'Match IA avanzado', included: true },
       { text: 'Modo incógnito avanzado', included: true },
+      { text: 'Análisis de perfil profundo', included: true },
     ],
   },
 ];
@@ -102,6 +110,26 @@ export default function Membership() {
         </div>
       </motion.div>
 
+      {/* New features banner */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-2xl p-4 border border-indigo-500/20 mb-6"
+      >
+        <div className="flex items-center gap-2 mb-2">
+          <Brain className="w-4 h-4 text-indigo-400" />
+          <span className="text-indigo-400 text-xs font-bold">NUEVO EN FASE 2 & 3</span>
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {['Match IA', 'Vídeos', 'Notas de voz', 'Eventos', 'Rompehielos', 'Historias', 'Compatibilidad', 'BFF/Biz', 'LinkedIn', 'Analytics'].map((feature) => (
+            <span key={feature} className="px-2 py-0.5 bg-white/10 rounded-full text-[10px] text-white/60">
+              {feature}
+            </span>
+          ))}
+        </div>
+      </motion.div>
+
       {/* Plans */}
       <div className="space-y-4 max-w-lg mx-auto">
         {plans.map((plan, index) => (
@@ -109,7 +137,7 @@ export default function Membership() {
             key={plan.id}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
+            transition={{ delay: 0.1 + index * 0.1 }}
             className={`relative rounded-2xl overflow-hidden border ${
               plan.popular ? 'border-yellow-500/50' : 'border-white/10'
             } ${plan.id === membership ? 'ring-2 ring-white/30' : ''}`}

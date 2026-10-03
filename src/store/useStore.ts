@@ -87,7 +87,7 @@ export interface CompatibilityResult {
   suggestions: string[];
 }
 
-export type Screen = 'welcome' | 'auth' | 'onboarding' | 'swipe' | 'membership' | 'payment' | 'chat' | 'chatDetail' | 'notifications' | 'profile' | 'consumables' | 'stories' | 'storyViewer' | 'events' | 'eventDetail' | 'iceBreaker' | 'aiMatching' | 'compatibility' | 'bffMode' | 'linkedinVerify' | 'analytics' | 'videoProfile';
+export type Screen = 'welcome' | 'auth' | 'profileSetup' | 'onboarding' | 'swipe' | 'membership' | 'payment' | 'chat' | 'chatDetail' | 'notifications' | 'profile' | 'consumables' | 'stories' | 'storyViewer' | 'events' | 'eventDetail' | 'iceBreaker' | 'aiMatching' | 'compatibility' | 'bffMode' | 'linkedinVerify' | 'analytics' | 'videoProfile' | 'settings' | 'editProfile' | 'likesReceived' | 'search' | 'helpCenter' | 'referral' | 'badges' | 'topPicks' | 'profileDetail' | 'report' | 'filters' | 'passport' | 'videoCall' | 'pushNotifications' | 'giftMarketplace' | 'groupMode' | 'spotifyIntegration' | 'arFilters' | 'dateScheduler' | 'aiVerification' | 'aiModeration';
 export type MembershipTier = 'free' | 'plus' | 'gold' | 'platinum' | 'select';
 export type AppMode = 'dating' | 'bff' | 'business';
 
@@ -99,8 +99,28 @@ export interface User {
   gender: 'male' | 'female' | 'other';
   lookingFor: 'male' | 'female' | 'everyone';
   avatar?: string;
+  photos?: string[];
+  bio?: string;
+  interests?: string[];
+  location?: { city: string; country: string; lat: number; lng: number };
   verified: boolean;
+  profileComplete: boolean;
   createdAt: Date;
+}
+
+export interface Toast {
+  id: string;
+  type: 'success' | 'error' | 'info' | 'warning';
+  message: string;
+  duration?: number;
+}
+
+export interface ReceivedLike {
+  id: string;
+  profileId: number;
+  blurred: boolean;
+  timestamp: Date;
+  revealed: boolean;
 }
 
 interface AppState {
@@ -110,7 +130,7 @@ interface AppState {
   isAuthenticated: boolean;
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (userData: Omit<User, 'id' | 'verified' | 'createdAt'> & { password: string }) => Promise<boolean>;
+  register: (userData: { name: string; email: string; password: string; age: number; gender: 'male' | 'female' | 'other'; lookingFor: 'male' | 'female' | 'everyone' }) => Promise<boolean>;
   logout: () => void;
   updateProfile: (updates: Partial<User>) => void;
   currentProfileIndex: number;
@@ -176,6 +196,58 @@ interface AppState {
     weeklyActivity: number[];
     matchRate: number;
   };
+  // New features
+  blockedUsers: number[];
+  reportedUsers: { userId: number; reason: string; timestamp: Date }[];
+  blockUser: (userId: number) => void;
+  unblockUser: (userId: number) => void;
+  reportUser: (userId: number, reason: string) => void;
+  likesReceived: { profileId: number; timestamp: Date }[];
+  addLikeReceived: (profileId: number) => void;
+  clearLikesReceived: () => void;
+  topPicks: number[];
+  setTopPicks: (picks: number[]) => void;
+  badges: { id: string; name: string; icon: string; earned: boolean; description: string }[];
+  earnBadge: (id: string) => void;
+  referralCode: string;
+  referralCount: number;
+  incrementReferral: () => void;
+  profilePhotos: string[];
+  addPhoto: (url: string) => void;
+  removePhoto: (index: number) => void;
+  searchFilters: {
+    ageRange: [number, number];
+    distance: number;
+    interests: string[];
+    verified: boolean;
+  };
+  setSearchFilters: (filters: Partial<AppState['searchFilters']>) => void;
+  settings: {
+    notifications: {
+      matches: boolean;
+      messages: boolean;
+      likes: boolean;
+      events: boolean;
+    };
+    privacy: {
+      showDistance: boolean;
+      showAge: boolean;
+      incognitoMode: boolean;
+    };
+    preferences: {
+      language: string;
+      theme: 'dark' | 'light';
+    };
+  };
+  updateSettings: (updates: Partial<AppState['settings']>) => void;
+  // Additional features
+  toasts: Toast[];
+  addToast: (toast: Omit<Toast, 'id'>) => void;
+  removeToast: (id: string) => void;
+  previousProfile: Profile | null;
+  setPreviousProfile: (profile: Profile | null) => void;
+  passportLocation: { city: string; country: string } | null;
+  setPassportLocation: (location: { city: string; country: string } | null) => void;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -201,6 +273,7 @@ export const useStore = create<AppState>((set, get) => ({
           gender: 'male',
           lookingFor: 'female',
           verified: false,
+          profileComplete: false,
           createdAt: new Date(),
         },
       });
@@ -224,6 +297,7 @@ export const useStore = create<AppState>((set, get) => ({
           gender: userData.gender,
           lookingFor: userData.lookingFor,
           verified: false,
+          profileComplete: false,
           createdAt: new Date(),
         },
       });
@@ -361,4 +435,99 @@ export const useStore = create<AppState>((set, get) => ({
     weeklyActivity: [12, 18, 8, 22, 15, 28, 20],
     matchRate: 18,
   },
+
+  // New features implementation
+  blockedUsers: [],
+  reportedUsers: [],
+  blockUser: (userId) => set((state) => ({ blockedUsers: [...state.blockedUsers, userId] })),
+  unblockUser: (userId) => set((state) => ({ blockedUsers: state.blockedUsers.filter(id => id !== userId) })),
+  reportUser: (userId, reason) => set((state) => ({
+    reportedUsers: [...state.reportedUsers, { userId, reason, timestamp: new Date() }]
+  })),
+
+  likesReceived: [
+    { profileId: 2, timestamp: new Date(Date.now() - 3600000) },
+    { profileId: 5, timestamp: new Date(Date.now() - 7200000) },
+    { profileId: 7, timestamp: new Date(Date.now() - 10800000) },
+  ],
+  addLikeReceived: (profileId) => set((state) => ({
+    likesReceived: [{ profileId, timestamp: new Date() }, ...state.likesReceived]
+  })),
+  clearLikesReceived: () => set({ likesReceived: [] }),
+
+  topPicks: [1, 3, 5, 8],
+  setTopPicks: (picks) => set({ topPicks: picks }),
+
+  badges: [
+    { id: 'first_match', name: 'Primer Match', icon: '💕', earned: true, description: 'Conseguiste tu primer match' },
+    { id: 'social_butterfly', name: 'Mariposa Social', icon: '🦋', earned: true, description: '50 mensajes enviados' },
+    { id: 'photographer', name: 'Fotógrafo', icon: '📸', earned: false, description: 'Sube 5 fotos a tu perfil' },
+    { id: 'verified', name: 'Verificado', icon: '✓', earned: false, description: 'Verifica tu identidad' },
+    { id: 'explorer', name: 'Explorador', icon: '🗺️', earned: false, description: 'Usa Pasaporte en 3 ciudades' },
+    { id: 'champion', name: 'Campeón', icon: '🏆', earned: false, description: '100 matches conseguidos' },
+  ],
+  earnBadge: (id) => set((state) => ({
+    badges: state.badges.map(b => b.id === id ? { ...b, earned: true } : b)
+  })),
+
+  referralCode: 'FLAMA2026',
+  referralCount: 3,
+  incrementReferral: () => set((state) => ({ referralCount: state.referralCount + 1 })),
+
+  profilePhotos: [
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
+    'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
+  ],
+  addPhoto: (url) => set((state) => ({ profilePhotos: [...state.profilePhotos, url] })),
+  removePhoto: (index) => set((state) => ({
+    profilePhotos: state.profilePhotos.filter((_, i) => i !== index)
+  })),
+
+  searchFilters: {
+    ageRange: [18, 40],
+    distance: 25,
+    interests: [],
+    verified: false,
+  },
+  setSearchFilters: (filters) => set((state) => ({
+    searchFilters: { ...state.searchFilters, ...filters }
+  })),
+
+  settings: {
+    notifications: {
+      matches: true,
+      messages: true,
+      likes: true,
+      events: false,
+    },
+    privacy: {
+      showDistance: true,
+      showAge: true,
+      incognitoMode: false,
+    },
+    preferences: {
+      language: 'es',
+      theme: 'dark',
+    },
+  },
+  updateSettings: (updates) => set((state) => ({
+    settings: { ...state.settings, ...updates }
+  })),
+
+  // Additional features
+  toasts: [],
+  addToast: (toast) => {
+    const id = Date.now().toString();
+    set((state) => ({ toasts: [...state.toasts, { ...toast, id }] }));
+    setTimeout(() => {
+      set((state) => ({ toasts: state.toasts.filter(t => t.id !== id) }));
+    }, toast.duration || 3000);
+  },
+  removeToast: (id) => set((state) => ({ toasts: state.toasts.filter(t => t.id !== id) })),
+  
+  previousProfile: null,
+  setPreviousProfile: (profile) => set({ previousProfile: profile }),
+  
+  passportLocation: null,
+  setPassportLocation: (location) => set({ passportLocation: location }),
 }));

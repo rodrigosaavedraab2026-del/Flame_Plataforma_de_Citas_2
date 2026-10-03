@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Shield, Crown, Zap, Star, Heart, Camera, Edit, Settings, Brain, TrendingUp, Calendar, Sparkles, Users, Video, Linkedin, BarChart3, Gamepad2, BookOpen } from 'lucide-react';
+import { Shield, Crown, Zap, Star, Heart, Camera, Edit, Settings, Brain, TrendingUp, Calendar, Sparkles, Users, Video, Linkedin, BarChart3, Gamepad2, BookOpen, Trophy, Gift, HelpCircle } from 'lucide-react';
 import { useStore } from '../store/useStore';
 
 const tierInfo: Record<string, { name: string; color: string; icon: any }> = {
@@ -25,6 +25,12 @@ export default function Profile() {
     { icon: Users, label: 'Modo App', screen: 'bffMode' as const, color: 'text-blue-400' },
     { icon: BarChart3, label: 'Analytics', screen: 'analytics' as const, color: 'text-cyan-400' },
     { icon: Linkedin, label: linkedinVerified ? '✓ LinkedIn' : 'LinkedIn', screen: 'linkedinVerify' as const, color: 'text-blue-500' },
+    { icon: Heart, label: 'Likes', screen: 'likesReceived' as const, color: 'text-pink-500' },
+    { icon: Crown, label: 'Top Picks', screen: 'topPicks' as const, color: 'text-yellow-400' },
+    { icon: Trophy, label: 'Logros', screen: 'badges' as const, color: 'text-amber-400' },
+    { icon: Gift, label: 'Invitar', screen: 'referral' as const, color: 'text-green-400' },
+    { icon: HelpCircle, label: 'Ayuda', screen: 'helpCenter' as const, color: 'text-blue-400' },
+    { icon: Settings, label: 'Ajustes', screen: 'settings' as const, color: 'text-gray-400' },
   ];
 
   return (
@@ -86,7 +92,7 @@ export default function Profile() {
         className="mt-4"
       >
         <h3 className="text-white font-semibold mb-3 text-sm">Funciones</h3>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-2 max-h-96 overflow-y-auto">
           {features.map((feature, index) => (
             <motion.button
               key={feature.label}
@@ -185,11 +191,17 @@ export default function Profile() {
         transition={{ delay: 0.5 }}
         className="mt-4 space-y-2"
       >
-        <button className="w-full flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+        <button
+          onClick={() => setScreen('editProfile')}
+          className="w-full flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+        >
           <Edit className="w-5 h-5 text-blue-400" />
           <span className="text-white text-sm font-medium">Editar perfil</span>
         </button>
-        <button className="w-full flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+        <button
+          onClick={() => setScreen('settings')}
+          className="w-full flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
+        >
           <Settings className="w-5 h-5 text-gray-400" />
           <span className="text-white text-sm font-medium">Configuración</span>
         </button>

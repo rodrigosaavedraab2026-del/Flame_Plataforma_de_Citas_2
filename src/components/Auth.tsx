@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, Calendar, Heart, ArrowLeft, Eye, EyeOff, Chrome, Apple, Facebook } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Mail, Lock, User, Calendar, ArrowLeft, Eye, EyeOff, Globe, Smartphone, Share2 } from 'lucide-react';
 import { useStore } from '../store/useStore';
 
 export default function Auth() {
@@ -37,13 +37,17 @@ export default function Auth() {
     }
     
     setLoading(true);
-    const success = await login(loginEmail, loginPassword);
-    setLoading(false);
-    
-    if (success) {
-      setScreen('swipe');
-    } else {
-      setError('Credenciales inválidas');
+    try {
+      const success = await login(loginEmail, loginPassword);
+      if (success) {
+        setScreen('swipe');
+      } else {
+        setError('Credenciales inválidas');
+      }
+    } catch (err) {
+      setError('Error al iniciar sesión');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -79,26 +83,29 @@ export default function Auth() {
     
     if (step === 3) {
       setLoading(true);
-      const success = await register({
-        name: registerName,
-        email: registerEmail,
-        password: registerPassword,
-        age: parseInt(registerAge),
-        gender: registerGender,
-        lookingFor: registerLookingFor,
-      });
-      setLoading(false);
-      
-      if (success) {
-        setScreen('swipe');
-      } else {
+      try {
+        const success = await register({
+          name: registerName,
+          email: registerEmail,
+          password: registerPassword,
+          age: parseInt(registerAge),
+          gender: registerGender,
+          lookingFor: registerLookingFor,
+        });
+        if (success) {
+          setScreen('swipe');
+        } else {
+          setError('Error al crear la cuenta');
+        }
+      } catch (err) {
         setError('Error al crear la cuenta');
+      } finally {
+        setLoading(false);
       }
     }
   };
 
   const handleSocialLogin = (provider: string) => {
-    // Simulate social login
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -146,7 +153,7 @@ export default function Auth() {
             disabled={loading}
             className="w-full flex items-center justify-center gap-3 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl text-white font-medium transition-all disabled:opacity-50"
           >
-            <Chrome className="w-5 h-5" />
+            <Globe className="w-5 h-5" />
             Continuar con Google
           </button>
           <button
@@ -154,7 +161,7 @@ export default function Auth() {
             disabled={loading}
             className="w-full flex items-center justify-center gap-3 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl text-white font-medium transition-all disabled:opacity-50"
           >
-            <Apple className="w-5 h-5" />
+            <Smartphone className="w-5 h-5" />
             Continuar con Apple
           </button>
           <button
@@ -162,7 +169,7 @@ export default function Auth() {
             disabled={loading}
             className="w-full flex items-center justify-center gap-3 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl text-white font-medium transition-all disabled:opacity-50"
           >
-            <Facebook className="w-5 h-5" />
+            <Share2 className="w-5 h-5" />
             Continuar con Facebook
           </button>
         </motion.div>
@@ -175,75 +182,286 @@ export default function Auth() {
         </div>
 
         {/* Form */}
-        <AnimatePresence mode="wait">
-          {mode === 'login' ? (
-            <motion.div
-              key="login"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="space-y-4"
-            >
-              {/* Email */}
-              <div>
-                <label className="text-white/60 text-sm mb-2 block">Email</label>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                  <input
-                    type="email"
-                    value={loginEmail}
-                    onChange={(e) => setLoginEmail(e.target.value)}
-                    placeholder="tu@email.com"
-                    className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 transition-all"
-                  />
-                </div>
+        {mode === 'login' ? (
+          <motion.div
+            key="login"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-4"
+          >
+            {/* Email */}
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Email</label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                <input
+                  type="email"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  placeholder="tu@email.com"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 transition-all"
+                />
               </div>
+            </div>
 
-              {/* Password */}
-              <div>
-                <label className="text-white/60 text-sm mb-2 block">Contraseña</label>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={loginPassword}
-                    onChange={(e) => setLoginPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-12 py-3 text-white placeholder-white/30 focus:outline-none focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 transition-all"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/60"
-                  >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                  </button>
-                </div>
-              </div>
-
-              {/* Error */}
-              {error && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-red-400 text-sm text-center"
+            {/* Password */}
+            <div>
+              <label className="text-white/60 text-sm mb-2 block">Contraseña</label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-12 py-3 text-white placeholder-white/30 focus:outline-none focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 transition-all"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/60"
                 >
-                  {error}
-                </motion.p>
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+
+            {/* Error */}
+            {error && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-red-400 text-sm text-center"
+              >
+                {error}
+              </motion.p>
+            )}
+
+            {/* Forgot password */}
+            <button className="text-pink-400 text-sm hover:text-pink-300 transition-colors">
+              ¿Olvidaste tu contraseña?
+            </button>
+
+            {/* Login button */}
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleLogin}
+              disabled={loading}
+              className="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold text-lg rounded-xl shadow-xl shadow-pink-500/20 disabled:opacity-50 transition-all"
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
+                  />
+                  Iniciando sesión...
+                </span>
+              ) : (
+                'Iniciar sesión'
               )}
+            </motion.button>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="register"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-4"
+          >
+            {/* Progress */}
+            <div className="flex gap-2 mb-4">
+              {[1, 2, 3].map((s) => (
+                <div key={s} className="flex-1 h-1.5 rounded-full bg-white/20 overflow-hidden">
+                  <motion.div
+                    className="h-full bg-gradient-to-r from-pink-500 to-purple-500"
+                    initial={{ width: '0%' }}
+                    animate={{ width: step >= s ? '100%' : '0%' }}
+                  />
+                </div>
+              ))}
+            </div>
 
-              {/* Forgot password */}
-              <button className="text-pink-400 text-sm hover:text-pink-300 transition-colors">
-                ¿Olvidaste tu contraseña?
-              </button>
+            {step === 1 && (
+              <motion.div
+                key="step1"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-4"
+              >
+                {/* Name */}
+                <div>
+                  <label className="text-white/60 text-sm mb-2 block">Nombre</label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                    <input
+                      type="text"
+                      value={registerName}
+                      onChange={(e) => setRegisterName(e.target.value)}
+                      placeholder="Tu nombre"
+                      className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 transition-all"
+                    />
+                  </div>
+                </div>
 
-              {/* Login button */}
+                {/* Email */}
+                <div>
+                  <label className="text-white/60 text-sm mb-2 block">Email</label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                    <input
+                      type="email"
+                      value={registerEmail}
+                      onChange={(e) => setRegisterEmail(e.target.value)}
+                      placeholder="tu@email.com"
+                      className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Password */}
+                <div>
+                  <label className="text-white/60 text-sm mb-2 block">Contraseña</label>
+                  <div className="relative">
+                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={registerPassword}
+                      onChange={(e) => setRegisterPassword(e.target.value)}
+                      placeholder="Mínimo 6 caracteres"
+                      className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-12 py-3 text-white placeholder-white/30 focus:outline-none focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/60"
+                    >
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {step === 2 && (
+              <motion.div
+                key="step2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-4"
+              >
+                {/* Age */}
+                <div>
+                  <label className="text-white/60 text-sm mb-2 block">Edad</label>
+                  <div className="relative">
+                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                    <input
+                      type="number"
+                      value={registerAge}
+                      onChange={(e) => setRegisterAge(e.target.value)}
+                      placeholder="Tu edad"
+                      min="18"
+                      max="99"
+                      className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Gender */}
+                <div>
+                  <label className="text-white/60 text-sm mb-2 block">Soy</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { value: 'male', label: 'Hombre' },
+                      { value: 'female', label: 'Mujer' },
+                      { value: 'other', label: 'Otro' },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setRegisterGender(option.value as 'male' | 'female' | 'other')}
+                        className={`py-3 rounded-xl font-medium transition-all ${
+                          registerGender === option.value
+                            ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
+                            : 'bg-white/10 text-white/60 hover:bg-white/15'
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {step === 3 && (
+              <motion.div
+                key="step3"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="space-y-4"
+              >
+                {/* Looking for */}
+                <div>
+                  <label className="text-white/60 text-sm mb-2 block">Me interesa conocer</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { value: 'male', label: 'Hombres' },
+                      { value: 'female', label: 'Mujeres' },
+                      { value: 'everyone', label: 'Todos' },
+                    ].map((option) => (
+                      <button
+                        key={option.value}
+                        onClick={() => setRegisterLookingFor(option.value as 'male' | 'female' | 'everyone')}
+                        className={`py-3 rounded-xl font-medium transition-all ${
+                          registerLookingFor === option.value
+                            ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
+                            : 'bg-white/10 text-white/60 hover:bg-white/15'
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Info */}
+                <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+                  <p className="text-white/60 text-sm text-center">
+                    💡 Puedes cambiar estas preferencias más tarde en tu perfil
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Error */}
+            {error && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-red-400 text-sm text-center"
+              >
+                {error}
+              </motion.p>
+            )}
+
+            {/* Navigation */}
+            <div className="flex gap-3">
+              {step > 1 && (
+                <button
+                  onClick={() => setStep(step - 1)}
+                  className="flex-1 py-4 bg-white/10 text-white font-semibold rounded-xl border border-white/20"
+                >
+                  Atrás
+                </button>
+              )}
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={handleLogin}
+                onClick={handleRegister}
                 disabled={loading}
-                className="w-full py-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold text-lg rounded-xl shadow-xl shadow-pink-500/20 disabled:opacity-50 transition-all"
+                className="flex-1 py-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold rounded-xl shadow-xl shadow-pink-500/20 disabled:opacity-50 transition-all"
               >
                 {loading ? (
                   <span className="flex items-center justify-center gap-2">
@@ -252,237 +470,17 @@ export default function Auth() {
                       transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                       className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
                     />
-                    Iniciando sesión...
+                    Creando cuenta...
                   </span>
+                ) : step === 3 ? (
+                  'Crear cuenta'
                 ) : (
-                  'Iniciar sesión'
+                  'Siguiente'
                 )}
               </motion.button>
-            </motion.div>
-          ) : (
-            <motion.div
-              key="register"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="space-y-4"
-            >
-              {/* Progress */}
-              <div className="flex gap-2 mb-4">
-                {[1, 2, 3].map((s) => (
-                  <div key={s} className="flex-1 h-1.5 rounded-full bg-white/20 overflow-hidden">
-                    <motion.div
-                      className="h-full bg-gradient-to-r from-pink-500 to-purple-500"
-                      initial={{ width: '0%' }}
-                      animate={{ width: step >= s ? '100%' : '0%' }}
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <AnimatePresence mode="wait">
-                {step === 1 && (
-                  <motion.div
-                    key="step1"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="space-y-4"
-                  >
-                    {/* Name */}
-                    <div>
-                      <label className="text-white/60 text-sm mb-2 block">Nombre</label>
-                      <div className="relative">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                        <input
-                          type="text"
-                          value={registerName}
-                          onChange={(e) => setRegisterName(e.target.value)}
-                          placeholder="Tu nombre"
-                          className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 transition-all"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Email */}
-                    <div>
-                      <label className="text-white/60 text-sm mb-2 block">Email</label>
-                      <div className="relative">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                        <input
-                          type="email"
-                          value={registerEmail}
-                          onChange={(e) => setRegisterEmail(e.target.value)}
-                          placeholder="tu@email.com"
-                          className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 transition-all"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Password */}
-                    <div>
-                      <label className="text-white/60 text-sm mb-2 block">Contraseña</label>
-                      <div className="relative">
-                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                        <input
-                          type={showPassword ? 'text' : 'password'}
-                          value={registerPassword}
-                          onChange={(e) => setRegisterPassword(e.target.value)}
-                          placeholder="Mínimo 6 caracteres"
-                          className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-12 py-3 text-white placeholder-white/30 focus:outline-none focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 transition-all"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/60"
-                        >
-                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {step === 2 && (
-                  <motion.div
-                    key="step2"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="space-y-4"
-                  >
-                    {/* Age */}
-                    <div>
-                      <label className="text-white/60 text-sm mb-2 block">Edad</label>
-                      <div className="relative">
-                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
-                        <input
-                          type="number"
-                          value={registerAge}
-                          onChange={(e) => setRegisterAge(e.target.value)}
-                          placeholder="Tu edad"
-                          min="18"
-                          max="99"
-                          className="w-full bg-white/10 border border-white/20 rounded-xl pl-12 pr-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 transition-all"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Gender */}
-                    <div>
-                      <label className="text-white/60 text-sm mb-2 block">Soy</label>
-                      <div className="grid grid-cols-3 gap-2">
-                        {[
-                          { value: 'male', label: 'Hombre' },
-                          { value: 'female', label: 'Mujer' },
-                          { value: 'other', label: 'Otro' },
-                        ].map((option) => (
-                          <button
-                            key={option.value}
-                            onClick={() => setRegisterGender(option.value as any)}
-                            className={`py-3 rounded-xl font-medium transition-all ${
-                              registerGender === option.value
-                                ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
-                                : 'bg-white/10 text-white/60 hover:bg-white/15'
-                            }`}
-                          >
-                            {option.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </motion.div>
-                )}
-
-                {step === 3 && (
-                  <motion.div
-                    key="step3"
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="space-y-4"
-                  >
-                    {/* Looking for */}
-                    <div>
-                      <label className="text-white/60 text-sm mb-2 block">Me interesa conocer</label>
-                      <div className="grid grid-cols-3 gap-2">
-                        {[
-                          { value: 'male', label: 'Hombres' },
-                          { value: 'female', label: 'Mujeres' },
-                          { value: 'everyone', label: 'Todos' },
-                        ].map((option) => (
-                          <button
-                            key={option.value}
-                            onClick={() => setRegisterLookingFor(option.value as any)}
-                            className={`py-3 rounded-xl font-medium transition-all ${
-                              registerLookingFor === option.value
-                                ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white'
-                                : 'bg-white/10 text-white/60 hover:bg-white/15'
-                            }`}
-                          >
-                            {option.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Info */}
-                    <div className="bg-white/5 rounded-xl p-4 border border-white/10">
-                      <p className="text-white/60 text-sm text-center">
-                        💡 Puedes cambiar estas preferencias más tarde en tu perfil
-                      </p>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Error */}
-              {error && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-red-400 text-sm text-center"
-                >
-                  {error}
-                </motion.p>
-              )}
-
-              {/* Navigation */}
-              <div className="flex gap-3">
-                {step > 1 && (
-                  <button
-                    onClick={() => setStep(step - 1)}
-                    className="flex-1 py-4 bg-white/10 text-white font-semibold rounded-xl border border-white/20"
-                  >
-                    Atrás
-                  </button>
-                )}
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={handleRegister}
-                  disabled={loading}
-                  className="flex-1 py-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-bold rounded-xl shadow-xl shadow-pink-500/20 disabled:opacity-50 transition-all"
-                >
-                  {loading ? (
-                    <span className="flex items-center justify-center gap-2">
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                        className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full"
-                      />
-                      Creando cuenta...
-                    </span>
-                  ) : step === 3 ? (
-                    'Crear cuenta'
-                  ) : (
-                    'Siguiente'
-                  )}
-                </motion.button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </motion.div>
+        )}
 
         {/* Switch mode */}
         <motion.div

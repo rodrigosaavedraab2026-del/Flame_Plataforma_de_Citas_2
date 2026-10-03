@@ -1,6 +1,7 @@
 import { useStore } from './store/useStore';
 import Welcome from './components/Welcome';
 import Auth from './components/Auth';
+import ProfileSetup from './components/ProfileSetup';
 import Onboarding from './components/Onboarding';
 import SwipeScreen from './components/SwipeScreen';
 import Membership from './components/Membership';
@@ -18,6 +19,14 @@ import Compatibility from './components/Compatibility';
 import BFFMode, { LinkedInVerify } from './components/BFFMode';
 import Analytics from './components/Analytics';
 import VideoProfile from './components/VideoProfile';
+import Settings from './components/Settings';
+import EditProfile from './components/EditProfile';
+import LikesReceived from './components/LikesReceived';
+import Search from './components/Search';
+import HelpCenter from './components/HelpCenter';
+import Referral from './components/Referral';
+import Badges from './components/Badges';
+import TopPicks from './components/TopPicks';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const screensWithNav = ['swipe', 'membership', 'chat', 'notifications', 'profile', 'stories', 'events', 'consumables'];
@@ -31,6 +40,8 @@ function App() {
         return <Welcome />;
       case 'auth':
         return <Auth />;
+      case 'profileSetup':
+        return <ProfileSetup />;
       case 'onboarding':
         return <Onboarding />;
       case 'swipe':
@@ -65,6 +76,22 @@ function App() {
         return <Analytics />;
       case 'videoProfile':
         return <VideoProfile />;
+      case 'settings':
+        return <Settings />;
+      case 'editProfile':
+        return <EditProfile />;
+      case 'likesReceived':
+        return <LikesReceived />;
+      case 'search':
+        return <Search />;
+      case 'helpCenter':
+        return <HelpCenter />;
+      case 'referral':
+        return <Referral />;
+      case 'badges':
+        return <Badges />;
+      case 'topPicks':
+        return <TopPicks />;
       default:
         return <Welcome />;
     }

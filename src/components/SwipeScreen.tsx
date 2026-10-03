@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
-import { Heart, X, Star, MapPin, Shield, RotateCcw, Zap, Crown, Brain, Calendar, Sparkles } from 'lucide-react';
+import { Heart, X, Star, MapPin, Shield, RotateCcw, Zap, Crown, Brain, Calendar, Sparkles, Search } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { profiles } from '../data/profiles';
 
@@ -181,6 +181,14 @@ export default function SwipeScreen() {
 
       {/* Quick access bar */}
       <div className="flex items-center justify-center gap-3 px-4 pt-3">
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setScreen('search')}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-full border border-white/10"
+        >
+          <Search className="w-3.5 h-3.5 text-blue-400" />
+          <span className="text-white/70 text-xs">Buscar</span>
+        </motion.button>
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={() => setScreen('stories')}

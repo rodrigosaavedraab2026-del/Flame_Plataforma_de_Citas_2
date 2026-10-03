@@ -93,7 +93,7 @@ export default function Auth() {
           lookingFor: registerLookingFor,
         });
         if (success) {
-          setScreen('swipe');
+          setScreen('profileSetup');
         } else {
           setError('Error al crear la cuenta');
         }

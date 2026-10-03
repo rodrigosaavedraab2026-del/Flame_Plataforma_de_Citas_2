@@ -82,7 +82,7 @@ export default function Welcome() {
         transition={{ delay: 1.5, duration: 0.6 }}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        onClick={() => setScreen('onboarding')}
+        onClick={() => setScreen('auth')}
         className="mt-12 px-10 py-4 bg-white text-pink-600 font-bold text-lg rounded-full shadow-xl hover:shadow-2xl transition-all relative z-10"
       >
         Comenzar
@@ -96,9 +96,12 @@ export default function Welcome() {
         className="text-white/60 text-sm mt-6 relative z-10"
       >
         ¿Ya tienes cuenta?{' '}
-        <span className="text-white font-semibold cursor-pointer hover:underline">
+        <button
+          onClick={() => setScreen('auth')}
+          className="text-white font-semibold hover:underline"
+        >
           Iniciar sesión
-        </span>
+        </button>
       </motion.p>
 
       {/* Bottom text */}

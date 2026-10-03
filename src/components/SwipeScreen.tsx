@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react';
 import { motion, useMotionValue, useTransform, PanInfo } from 'framer-motion';
-import { Heart, X, Star, MapPin, Shield, RotateCcw, Zap, Crown } from 'lucide-react';
+import { Heart, X, Star, MapPin, Shield, RotateCcw, Zap, Crown, Brain, Calendar, Sparkles } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import { profiles } from '../data/profiles';
 
 export default function SwipeScreen() {
-  const { currentProfileIndex, setCurrentProfileIndex, likeProfile, superLikeProfile, passProfile, likedProfiles, passedProfiles, superLikesRemaining, boostsRemaining, addNotification, addChat } = useStore();
+  const { currentProfileIndex, setCurrentProfileIndex, likeProfile, superLikeProfile, passProfile, likedProfiles, passedProfiles, superLikesRemaining, boostsRemaining, addNotification, addChat, useSuperLike, useBoost, setScreen } = useStore();
   const [showMatch, setShowMatch] = useState(false);
   const [matchProfile, setMatchProfile] = useState<typeof profiles[0] | null>(null);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -71,7 +71,7 @@ export default function SwipeScreen() {
 
   const handleSuperLike = () => {
     if (!currentProfile || superLikesRemaining <= 0) return;
-    useStore.getState().useSuperLike();
+    useSuperLike();
     superLikeProfile(currentProfile.id);
     setMatchProfile(currentProfile);
     setShowMatch(true);
@@ -178,6 +178,34 @@ export default function SwipeScreen() {
           </motion.div>
         </motion.div>
       )}
+
+      {/* Quick access bar */}
+      <div className="flex items-center justify-center gap-3 px-4 pt-3">
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setScreen('stories')}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-full border border-white/10"
+        >
+          <Sparkles className="w-3.5 h-3.5 text-orange-400" />
+          <span className="text-white/70 text-xs">Historias</span>
+        </motion.button>
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setScreen('aiMatching')}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-full border border-white/10"
+        >
+          <Brain className="w-3.5 h-3.5 text-indigo-400" />
+          <span className="text-white/70 text-xs">Match IA</span>
+        </motion.button>
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setScreen('events')}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 rounded-full border border-white/10"
+        >
+          <Calendar className="w-3.5 h-3.5 text-green-400" />
+          <span className="text-white/70 text-xs">Eventos</span>
+        </motion.button>
+      </div>
 
       {/* Card */}
       <div className="flex-1 flex items-center justify-center p-4">

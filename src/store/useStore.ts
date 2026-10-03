@@ -87,7 +87,7 @@ export interface CompatibilityResult {
   suggestions: string[];
 }
 
-export type Screen = 'welcome' | 'auth' | 'profileSetup' | 'onboarding' | 'swipe' | 'membership' | 'payment' | 'chat' | 'chatDetail' | 'notifications' | 'profile' | 'consumables' | 'stories' | 'storyViewer' | 'events' | 'eventDetail' | 'iceBreaker' | 'aiMatching' | 'compatibility' | 'bffMode' | 'linkedinVerify' | 'analytics' | 'videoProfile' | 'settings' | 'editProfile' | 'likesReceived' | 'search' | 'helpCenter' | 'referral' | 'badges' | 'topPicks';
+export type Screen = 'welcome' | 'auth' | 'profileSetup' | 'onboarding' | 'swipe' | 'membership' | 'payment' | 'chat' | 'chatDetail' | 'notifications' | 'profile' | 'consumables' | 'stories' | 'storyViewer' | 'events' | 'eventDetail' | 'iceBreaker' | 'aiMatching' | 'compatibility' | 'bffMode' | 'linkedinVerify' | 'analytics' | 'videoProfile' | 'settings' | 'editProfile' | 'likesReceived' | 'search' | 'helpCenter' | 'referral' | 'badges' | 'topPicks' | 'profileDetail' | 'report' | 'filters' | 'passport';
 export type MembershipTier = 'free' | 'plus' | 'gold' | 'platinum' | 'select';
 export type AppMode = 'dating' | 'bff' | 'business';
 
@@ -99,8 +99,28 @@ export interface User {
   gender: 'male' | 'female' | 'other';
   lookingFor: 'male' | 'female' | 'everyone';
   avatar?: string;
+  photos?: string[];
+  bio?: string;
+  interests?: string[];
+  location?: { city: string; country: string; lat: number; lng: number };
   verified: boolean;
+  profileComplete: boolean;
   createdAt: Date;
+}
+
+export interface Toast {
+  id: string;
+  type: 'success' | 'error' | 'info' | 'warning';
+  message: string;
+  duration?: number;
+}
+
+export interface ReceivedLike {
+  id: string;
+  profileId: number;
+  blurred: boolean;
+  timestamp: Date;
+  revealed: boolean;
 }
 
 interface AppState {
@@ -110,7 +130,7 @@ interface AppState {
   isAuthenticated: boolean;
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
-  register: (userData: Omit<User, 'id' | 'verified' | 'createdAt'> & { password: string }) => Promise<boolean>;
+  register: (userData: { name: string; email: string; password: string; age: number; gender: 'male' | 'female' | 'other'; lookingFor: 'male' | 'female' | 'everyone' }) => Promise<boolean>;
   logout: () => void;
   updateProfile: (updates: Partial<User>) => void;
   currentProfileIndex: number;
@@ -220,6 +240,14 @@ interface AppState {
     };
   };
   updateSettings: (updates: Partial<AppState['settings']>) => void;
+  // Additional features
+  toasts: Toast[];
+  addToast: (toast: Omit<Toast, 'id'>) => void;
+  removeToast: (id: string) => void;
+  previousProfile: Profile | null;
+  setPreviousProfile: (profile: Profile | null) => void;
+  passportLocation: { city: string; country: string } | null;
+  setPassportLocation: (location: { city: string; country: string } | null) => void;
 }
 
 export const useStore = create<AppState>((set, get) => ({
@@ -245,6 +273,7 @@ export const useStore = create<AppState>((set, get) => ({
           gender: 'male',
           lookingFor: 'female',
           verified: false,
+          profileComplete: false,
           createdAt: new Date(),
         },
       });
@@ -268,6 +297,7 @@ export const useStore = create<AppState>((set, get) => ({
           gender: userData.gender,
           lookingFor: userData.lookingFor,
           verified: false,
+          profileComplete: false,
           createdAt: new Date(),
         },
       });
@@ -483,4 +513,21 @@ export const useStore = create<AppState>((set, get) => ({
   updateSettings: (updates) => set((state) => ({
     settings: { ...state.settings, ...updates }
   })),
+
+  // Additional features
+  toasts: [],
+  addToast: (toast) => {
+    const id = Date.now().toString();
+    set((state) => ({ toasts: [...state.toasts, { ...toast, id }] }));
+    setTimeout(() => {
+      set((state) => ({ toasts: state.toasts.filter(t => t.id !== id) }));
+    }, toast.duration || 3000);
+  },
+  removeToast: (id) => set((state) => ({ toasts: state.toasts.filter(t => t.id !== id) })),
+  
+  previousProfile: null,
+  setPreviousProfile: (profile) => set({ previousProfile: profile }),
+  
+  passportLocation: null,
+  setPassportLocation: (location) => set({ passportLocation: location }),
 }));

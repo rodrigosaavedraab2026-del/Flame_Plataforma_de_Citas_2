@@ -27,6 +27,8 @@ import HelpCenter from './components/HelpCenter';
 import Referral from './components/Referral';
 import Badges from './components/Badges';
 import TopPicks from './components/TopPicks';
+import ProfileDetail from './components/ProfileDetail';
+import Toast from './components/Toast';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const screensWithNav = ['swipe', 'membership', 'chat', 'notifications', 'profile', 'stories', 'events', 'consumables'];
@@ -92,6 +94,8 @@ function App() {
         return <Badges />;
       case 'topPicks':
         return <TopPicks />;
+      case 'profileDetail':
+        return <ProfileDetail />;
       default:
         return <Welcome />;
     }
@@ -101,6 +105,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-slate-900 max-w-lg mx-auto relative overflow-hidden">
+      <Toast />
       <AnimatePresence mode="wait">
         <motion.div
           key={screen}

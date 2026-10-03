@@ -87,7 +87,7 @@ export interface CompatibilityResult {
   suggestions: string[];
 }
 
-export type Screen = 'welcome' | 'auth' | 'profileSetup' | 'onboarding' | 'swipe' | 'membership' | 'payment' | 'chat' | 'chatDetail' | 'notifications' | 'profile' | 'consumables' | 'stories' | 'storyViewer' | 'events' | 'eventDetail' | 'iceBreaker' | 'aiMatching' | 'compatibility' | 'bffMode' | 'linkedinVerify' | 'analytics' | 'videoProfile' | 'settings' | 'editProfile' | 'likesReceived' | 'search' | 'helpCenter' | 'referral' | 'badges' | 'topPicks' | 'profileDetail' | 'report' | 'filters' | 'passport';
+export type Screen = 'welcome' | 'auth' | 'profileSetup' | 'onboarding' | 'swipe' | 'membership' | 'payment' | 'chat' | 'chatDetail' | 'notifications' | 'profile' | 'consumables' | 'stories' | 'storyViewer' | 'events' | 'eventDetail' | 'iceBreaker' | 'aiMatching' | 'compatibility' | 'bffMode' | 'linkedinVerify' | 'analytics' | 'videoProfile' | 'settings' | 'editProfile' | 'likesReceived' | 'search' | 'helpCenter' | 'referral' | 'badges' | 'topPicks' | 'profileDetail' | 'report' | 'filters' | 'passport' | 'videoCall' | 'pushNotifications' | 'giftMarketplace' | 'groupMode' | 'spotifyIntegration' | 'arFilters' | 'dateScheduler' | 'aiVerification' | 'aiModeration';
 export type MembershipTier = 'free' | 'plus' | 'gold' | 'platinum' | 'select';
 export type AppMode = 'dating' | 'bff' | 'business';
 

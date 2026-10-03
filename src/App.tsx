@@ -29,6 +29,15 @@ import Badges from './components/Badges';
 import TopPicks from './components/TopPicks';
 import ProfileDetail from './components/ProfileDetail';
 import Toast from './components/Toast';
+import VideoCall from './components/VideoCall';
+import PushNotifications from './components/PushNotifications';
+import GiftMarketplace from './components/GiftMarketplace';
+import GroupMode from './components/GroupMode';
+import SpotifyIntegration from './components/SpotifyIntegration';
+import ARFilters from './components/ARFilters';
+import DateScheduler from './components/DateScheduler';
+import AIVerification from './components/AIVerification';
+import AIModeration from './components/AIModeration';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const screensWithNav = ['swipe', 'membership', 'chat', 'notifications', 'profile', 'stories', 'events', 'consumables'];
@@ -96,6 +105,24 @@ function App() {
         return <TopPicks />;
       case 'profileDetail':
         return <ProfileDetail />;
+      case 'videoCall':
+        return <VideoCall />;
+      case 'pushNotifications':
+        return <PushNotifications />;
+      case 'giftMarketplace':
+        return <GiftMarketplace />;
+      case 'groupMode':
+        return <GroupMode />;
+      case 'spotifyIntegration':
+        return <SpotifyIntegration />;
+      case 'arFilters':
+        return <ARFilters />;
+      case 'dateScheduler':
+        return <DateScheduler />;
+      case 'aiVerification':
+        return <AIVerification />;
+      case 'aiModeration':
+        return <AIModeration />;
       default:
         return <Welcome />;
     }

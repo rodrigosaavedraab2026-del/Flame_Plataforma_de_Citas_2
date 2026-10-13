@@ -7,7 +7,6 @@ export default function Welcome() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-500 via-pink-500 to-purple-600 flex flex-col items-center justify-center p-6 relative overflow-hidden">
-      {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden">
         {[...Array(20)].map((_, i) => (
           <motion.div
@@ -33,7 +32,6 @@ export default function Welcome() {
         ))}
       </div>
 
-      {/* Logo */}
       <motion.div
         initial={{ scale: 0, rotate: -180 }}
         animate={{ scale: 1, rotate: 0 }}
@@ -45,7 +43,6 @@ export default function Welcome() {
         </div>
       </motion.div>
 
-      {/* Title */}
       <motion.h1
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
@@ -55,7 +52,6 @@ export default function Welcome() {
         Flama
       </motion.h1>
 
-      {/* Subtitle */}
       <motion.p
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -65,7 +61,6 @@ export default function Welcome() {
         Enciende la chispa 🔥
       </motion.p>
 
-      {/* Description */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -75,7 +70,6 @@ export default function Welcome() {
         Conecta con personas increíbles. Encuentra tu match perfecto.
       </motion.p>
 
-      {/* CTA Button */}
       <motion.button
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -88,7 +82,6 @@ export default function Welcome() {
         Comenzar
       </motion.button>
 
-      {/* Already have account */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -104,7 +97,6 @@ export default function Welcome() {
         </button>
       </motion.p>
 
-      {/* Bottom text */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

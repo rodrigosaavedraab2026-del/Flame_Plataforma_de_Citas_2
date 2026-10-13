@@ -26,17 +26,9 @@ export default function Navigation() {
                 key={item.screen}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => setScreen(item.screen)}
-                className={`relative flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-colors ${
-                  isActive ? 'text-pink-400' : 'text-white/40 hover:text-white/60'
-                }`}
+                className={`relative flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-colors ${isActive ? 'text-pink-400' : 'text-white/40 hover:text-white/60'}`}
               >
-                {isActive && (
-                  <motion.div
-                    layoutId="nav-indicator"
-                    className="absolute inset-0 bg-pink-500/10 rounded-xl"
-                    transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
-                  />
-                )}
+                {isActive && <motion.div layoutId="nav-indicator" className="absolute inset-0 bg-pink-500/10 rounded-xl" transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }} />}
                 <div className="relative">
                   <Icon className="w-5 h-5" />
                   {item.screen === 'notifications' && unreadCount > 0 && (

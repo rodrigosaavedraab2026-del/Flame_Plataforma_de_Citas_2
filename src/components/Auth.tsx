@@ -10,11 +10,9 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   
-  // Login form
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   
-  // Register form
   const [registerName, setRegisterName] = useState('');
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
@@ -25,22 +23,19 @@ export default function Auth() {
 
   const handleLogin = async () => {
     setError('');
-    
     if (!loginEmail || !loginPassword) {
       setError('Por favor completa todos los campos');
       return;
     }
-    
     if (loginPassword.length < 6) {
       setError('La contraseña debe tener al menos 6 caracteres');
       return;
     }
-    
     setLoading(true);
     try {
       const success = await login(loginEmail, loginPassword);
       if (success) {
-        setScreen('swipe');
+        setScreen('profileSetup');
       } else {
         setError('Credenciales inválidas');
       }
@@ -53,7 +48,6 @@ export default function Auth() {
 
   const handleRegister = async () => {
     setError('');
-    
     if (step === 1) {
       if (!registerName || !registerEmail || !registerPassword) {
         setError('Por favor completa todos los campos');
@@ -66,7 +60,6 @@ export default function Auth() {
       setStep(2);
       return;
     }
-    
     if (step === 2) {
       if (!registerAge) {
         setError('Por favor ingresa tu edad');
@@ -80,7 +73,6 @@ export default function Auth() {
       setStep(3);
       return;
     }
-    
     if (step === 3) {
       setLoading(true);
       try {
@@ -105,17 +97,16 @@ export default function Auth() {
     }
   };
 
-  const handleSocialLogin = (provider: string) => {
+  const handleSocialLogin = () => {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      setScreen('swipe');
+      setScreen('profileSetup');
     }, 1500);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6 flex flex-col">
-      {/* Header */}
       <motion.button
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -127,7 +118,6 @@ export default function Auth() {
       </motion.button>
 
       <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
-        {/* Title */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -141,7 +131,6 @@ export default function Auth() {
           </p>
         </motion.div>
 
-        {/* Social login buttons */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -149,7 +138,7 @@ export default function Auth() {
           className="space-y-3 mb-6"
         >
           <button
-            onClick={() => handleSocialLogin('google')}
+            onClick={handleSocialLogin}
             disabled={loading}
             className="w-full flex items-center justify-center gap-3 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl text-white font-medium transition-all disabled:opacity-50"
           >
@@ -157,7 +146,7 @@ export default function Auth() {
             Continuar con Google
           </button>
           <button
-            onClick={() => handleSocialLogin('apple')}
+            onClick={handleSocialLogin}
             disabled={loading}
             className="w-full flex items-center justify-center gap-3 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl text-white font-medium transition-all disabled:opacity-50"
           >
@@ -165,7 +154,7 @@ export default function Auth() {
             Continuar con Apple
           </button>
           <button
-            onClick={() => handleSocialLogin('facebook')}
+            onClick={handleSocialLogin}
             disabled={loading}
             className="w-full flex items-center justify-center gap-3 py-3 bg-white/10 hover:bg-white/15 border border-white/20 rounded-xl text-white font-medium transition-all disabled:opacity-50"
           >
@@ -174,14 +163,12 @@ export default function Auth() {
           </button>
         </motion.div>
 
-        {/* Divider */}
         <div className="flex items-center gap-4 mb-6">
           <div className="flex-1 h-px bg-white/20" />
           <span className="text-white/40 text-sm">o</span>
           <div className="flex-1 h-px bg-white/20" />
         </div>
 
-        {/* Form */}
         {mode === 'login' ? (
           <motion.div
             key="login"
@@ -189,7 +176,6 @@ export default function Auth() {
             animate={{ opacity: 1 }}
             className="space-y-4"
           >
-            {/* Email */}
             <div>
               <label className="text-white/60 text-sm mb-2 block">Email</label>
               <div className="relative">
@@ -204,7 +190,6 @@ export default function Auth() {
               </div>
             </div>
 
-            {/* Password */}
             <div>
               <label className="text-white/60 text-sm mb-2 block">Contraseña</label>
               <div className="relative">
@@ -226,7 +211,6 @@ export default function Auth() {
               </div>
             </div>
 
-            {/* Error */}
             {error && (
               <motion.p
                 initial={{ opacity: 0 }}
@@ -237,12 +221,10 @@ export default function Auth() {
               </motion.p>
             )}
 
-            {/* Forgot password */}
             <button className="text-pink-400 text-sm hover:text-pink-300 transition-colors">
               ¿Olvidaste tu contraseña?
             </button>
 
-            {/* Login button */}
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -271,7 +253,6 @@ export default function Auth() {
             animate={{ opacity: 1 }}
             className="space-y-4"
           >
-            {/* Progress */}
             <div className="flex gap-2 mb-4">
               {[1, 2, 3].map((s) => (
                 <div key={s} className="flex-1 h-1.5 rounded-full bg-white/20 overflow-hidden">
@@ -291,7 +272,6 @@ export default function Auth() {
                 animate={{ opacity: 1 }}
                 className="space-y-4"
               >
-                {/* Name */}
                 <div>
                   <label className="text-white/60 text-sm mb-2 block">Nombre</label>
                   <div className="relative">
@@ -306,7 +286,6 @@ export default function Auth() {
                   </div>
                 </div>
 
-                {/* Email */}
                 <div>
                   <label className="text-white/60 text-sm mb-2 block">Email</label>
                   <div className="relative">
@@ -321,7 +300,6 @@ export default function Auth() {
                   </div>
                 </div>
 
-                {/* Password */}
                 <div>
                   <label className="text-white/60 text-sm mb-2 block">Contraseña</label>
                   <div className="relative">
@@ -352,7 +330,6 @@ export default function Auth() {
                 animate={{ opacity: 1 }}
                 className="space-y-4"
               >
-                {/* Age */}
                 <div>
                   <label className="text-white/60 text-sm mb-2 block">Edad</label>
                   <div className="relative">
@@ -369,7 +346,6 @@ export default function Auth() {
                   </div>
                 </div>
 
-                {/* Gender */}
                 <div>
                   <label className="text-white/60 text-sm mb-2 block">Soy</label>
                   <div className="grid grid-cols-3 gap-2">
@@ -402,7 +378,6 @@ export default function Auth() {
                 animate={{ opacity: 1 }}
                 className="space-y-4"
               >
-                {/* Looking for */}
                 <div>
                   <label className="text-white/60 text-sm mb-2 block">Me interesa conocer</label>
                   <div className="grid grid-cols-3 gap-2">
@@ -426,7 +401,6 @@ export default function Auth() {
                   </div>
                 </div>
 
-                {/* Info */}
                 <div className="bg-white/5 rounded-xl p-4 border border-white/10">
                   <p className="text-white/60 text-sm text-center">
                     💡 Puedes cambiar estas preferencias más tarde en tu perfil
@@ -435,7 +409,6 @@ export default function Auth() {
               </motion.div>
             )}
 
-            {/* Error */}
             {error && (
               <motion.p
                 initial={{ opacity: 0 }}
@@ -446,7 +419,6 @@ export default function Auth() {
               </motion.p>
             )}
 
-            {/* Navigation */}
             <div className="flex gap-3">
               {step > 1 && (
                 <button
@@ -482,7 +454,6 @@ export default function Auth() {
           </motion.div>
         )}
 
-        {/* Switch mode */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -505,7 +476,6 @@ export default function Auth() {
         </motion.div>
       </div>
 
-      {/* Terms */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
